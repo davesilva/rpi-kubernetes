@@ -1,0 +1,27 @@
+#cloud-config
+
+hostname: kubernetes-master
+manage_etc_hosts: true
+
+users:
+  - name: david
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video
+    lock_passwd: true
+    ssh_pwauth: false
+    ssh-authorized-keys:
+      - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDL9N9vVpRQKCWD1LHOxECVezo9WaEpBgxBhERYN0qIKwQoMEDNmd2csL9hsXCIkGS2JztdsE7MMikCwuc5p21/dz5RSNn5B5//X3NKu8wChzTTk0rvLfvHiNjr4HuM+8db6ZhZQpgxK3qBbrLaBOhoTEMFqXnTzYUC1qGTih7xY62cZ8W3Jh4qt1KQd3CZ1fmfAV9BMA4alwV+O+31BqX4plqmSQ/H27lBiAI+ocDaNaGeHkIa6H0PoNJ5VADmAsKxjRelpd/8ZyQNIOWB/EJxNi3Ig+h9gvzwFql+DGkllUWhG3vE3+mc5zUiMkwoDyaDgpEqa+ahoWNtV6YuiTlB david@davebookair'
+
+runcmd:
+  # Pickup the hostname changes
+  - [ systemctl, restart, avahi-daemon ]
+
+  # Pickup the daemon.json changes
+  - [ systemctl, restart, docker ]
+
+  - [ kubeadm, init, --pod-network-cidr, 10.244.0.0/16 ]
+
+  - 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+
+  - [ kubectl, create, -f, /root/kube-flannel.yml ]
