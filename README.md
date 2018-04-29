@@ -39,5 +39,23 @@ Then just connect to each worker and use `kubeadm` to join the
 cluster.
 
     $ ssh kubernetes-worker1.local
-    
+
     $ sudo kubeadm join --token <TOKEN> kubernetes-master.<DOMAIN>:6443
+
+## Other things
+
+### Regenerating API certs
+
+On the master node:
+
+    # rm /etc/kubernetes/pki/apiserver.*
+
+    # sudo kubeadm alpha phase certs all --apiserver-advertise-address=0.0.0.0 --apiserver-cert-extra-sans=<DOMAIN>
+
+    $ docker rm -f `docker ps -q -f 'name=k8s_kube-apiserver*'`
+
+    # systemctl restart kubelet
+
+### Read the kubelet logs
+
+    # journalctl -u kubelet -f
