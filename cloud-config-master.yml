@@ -20,7 +20,7 @@ runcmd:
   # Pickup the daemon.json changes
   - [ systemctl, restart, docker ]
 
-  - [ kubeadm, init, --pod-network-cidr, 10.244.0.0/16 ]
+  - [ kubeadm, init, --pod-network-cidr, 10.244.0.0/16, --apiserver-cert-extra-sans, $HOSTNAME ]
 
   - 'export KUBECONFIG=/etc/kubernetes/admin.conf'
 
